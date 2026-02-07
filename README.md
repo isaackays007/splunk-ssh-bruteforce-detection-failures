@@ -20,6 +20,7 @@ I first validated that SSH authentication logs were ingested into Splunk as `lin
 ```spl
 index=main sourcetype=linux_secure "Failed password"
 ```
+![SSH failed password events](screenshots/events_failed_password.png)
 
 ## 4. Detection logic (SPL)
 
@@ -32,7 +33,9 @@ index=main sourcetype=linux_secure "Failed password"
 | where failed_count >= 5
 ```
 
-This search filters for failed SSH authentication messages, extracts the username and source IP, then aggregates failed attempts per `src` and `user`. It flags any IP–user pair with at least five failed SSH password attempts in the selected time window as potential brute-force activity.
+This search filters for failed SSH authentication messages, extracts the username and source IP, then aggregates failed attempts per `src` and `user`. It flags any IP–user pair with at least five failed SSH password attempts in the selected time window as potential brute-force action.
+
+![Brute-force aggregation statistics](screenshots/stats_bruteforce_table.png)
 
 ## 5. Alert configuration
 
@@ -45,6 +48,9 @@ I converted this search into a scheduled alert in Splunk:
 - Action: Add to Triggered Alerts (UI).
 
 This configuration raises a High-severity alert whenever an IP–user pair generates five or more failed SSH login attempts within five minutes, so a SOC analyst can investigate the source and apply blocking if needed.
+
+![Alert configuration](screenshots/alert_configuration.png)
+![Triggered alert results](screenshots/alert_view_results.png)
 
 ## 6. Results and observations
 
